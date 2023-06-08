@@ -1,0 +1,62 @@
+db.malware_data.aggregate([
+    {
+        $addFields: {
+            datetime: {
+                $toDate: "$first_seen"
+            }
+        }
+    },
+    {
+        $addFields: {
+            num_week: {
+                $week: "$datetime"
+            }
+        }
+    },
+    {
+        $addFields: {
+            year: {
+                $year: "$datetime"
+            }
+        }
+    },
+    {
+        $addFields: {
+            month: {
+                $month: "$datetime"
+            }
+        }
+    },
+    {
+        $addFields: {
+            num_detections: "$intelligence.uploads"
+        }
+    },
+    {
+        $addFields: {
+            malware_type: "$signature"
+        }
+    },
+    {
+        $addFields: {
+            country: "$origin_country"
+        }
+    },
+    {
+        $project: {
+            "_id": 0,
+            "sha1_hash": 1,
+            "datetime": 1,
+            "num_week": 1,
+            "year": 1,
+            "month": 1,
+            "file_size": 1,
+            "file_type": 1,
+            "delivery_method": 1,
+            "malware_type": 1,
+            "country": 1,
+            "num_detections": 1
+        }
+    },
+    { $out: { db: "tfm", coll: "malware_data_filtered" } }
+])
